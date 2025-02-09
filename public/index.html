@@ -4,10 +4,37 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>progetto slider</title>
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    
+    <div id="container" class="container">
+        <!-- parte public-->
+        <div id="home" class="content page visible">
+            <a href="#admin"><button id="bottone">vai ad admin</button></a>
+            <table id="contieniImmagini">
 
-   
+
+            </table>
+
+        </div>
+
+        <!-- parte login-->
+
+        <div id="login" class="page hidden">
+
+
+        </div>
+
+
+
+        <!-- parte admin-->
+        <div id="admin" class="page hidden">
+            <a href="#public"><button id="test2">vai a public</button></a>
+
+        </div>
+    </div>
+   <script type="module" src="public.js"></script>
+   <script type="module" src="index.js"></script>
+   <script type="module" src="navigator.js"></script>
 </body>
 </html>

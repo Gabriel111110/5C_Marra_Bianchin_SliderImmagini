@@ -1,0 +1,8 @@
+/* Visibilità delle pagine */
+.hidden {
+    display: none;
+  }
+  
+.visible {
+    display: block;
+}

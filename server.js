@@ -20,26 +20,26 @@ app.use(
 );
 app.use("/", express.static(path.join(__dirname, "public")));
 
-app.post("/todo/add", (req, res) => {
-  const todo = req.body.todo;
+app.post("/carosello/add", (req, res) => {
+  const carosello = req.body.carosello;
 
-  insert(todo);
+  insert(carosello);
 
   res.json({ result: "Ok" });
 });
 
-app.get("/todo", (req, res) => {
-  select().then(todos => res.json({ todos: todos }));
+app.get("/carosello", (req, res) => {
+  select().then(carosellos => res.json({ carosellos: carosellos }));
 });
 
-app.put("/todo/complete", (req, res) => {
-  const todo = req.body;
+app.put("/carosello/complete", (req, res) => {
+  const carosello = req.body;
 
   try {
     select()
-    .then(todos => {
-      todos.map((element) => {
-      if (element.id === todo.id) {
+    .then(carosellos => {
+      carosellos.map((element) => {
+      if (element.id === carosello.id) {
         element.completed = !element.completed;
         update(element);
       }
@@ -54,11 +54,11 @@ app.put("/todo/complete", (req, res) => {
   res.json({ result: "Ok" });
 });
 
-app.delete("/todo/:id", (req, res) => {
+app.delete("/carosello/:id", (req, res) => {
   select()
-  .then(todos => {
-    todos = todos.filter((element) => element.id == req.params.id);
-    remove(todos[0]);
+  .then(carosellos => {
+    carosellos = carosellos.filter((element) => element.id == req.params.id);
+    remove(carosellos[0]);
   })
   
   res.json({ result: "Ok" });
@@ -81,46 +81,46 @@ const executeQuery = (sql) => {
 
  const createTable = () => {
     return executeQuery(`
-    CREATE TABLE IF NOT EXISTS todo
+    CREATE TABLE IF NOT EXISTS carosello
        ( id INT PRIMARY KEY AUTO_INCREMENT, 
           name VARCHAR(255) NOT NULL, 
           completed BOOLEAN ) 
        `);      
  }
 
- const insert = (todo) => {
+ const insert = (carosello) => {
     const template = `
-    INSERT INTO todo (name, completed) VALUES ('$NAME', '$COMPLETED')
+    INSERT INTO carosello (name, completed) VALUES ('$NAME', '$COMPLETED')
        `;
-    let sql = template.replace("$NAME", todo.name);
-    sql = sql.replace("$COMPLETED", todo.completed ? 1 : 0);
+    let sql = template.replace("$NAME", carosello.name);
+    sql = sql.replace("$COMPLETED", carosello.completed ? 1 : 0);
     return executeQuery(sql); 
  }
 
  const select = () => {
     const sql = `
-    SELECT id, name, completed FROM todo 
+    SELECT id, name, completed FROM carosello 
        `;
     return executeQuery(sql); 
  }
 
- const update = (todo) =>{
+ const update = (carosello) =>{
     let sql = `
-    UPDATE todo SET completed = '$COMPLETED' WHERE id = '$ID'
+    UPDATE carosello SET completed = '$COMPLETED' WHERE id = '$ID'
     `;
 
-    sql = sql.replace("$COMPLETED", todo.completed  ? 1 : 0);
-    sql = sql.replace("$ID", todo.id);
+    sql = sql.replace("$COMPLETED", carosello.completed  ? 1 : 0);
+    sql = sql.replace("$ID", carosello.id);
     return executeQuery(sql); 
  }
 
 
- const remove = (todo) => {
+ const remove = (carosello) => {
   let sql =  `
-  DELETE FROM todo WHERE id = '$ID'
+  DELETE FROM carosello WHERE id = '$ID'
   `;
 
-  sql = sql.replace("$ID", todo.id);
+  sql = sql.replace("$ID", carosello.id);
   return executeQuery(sql); 
  }
 

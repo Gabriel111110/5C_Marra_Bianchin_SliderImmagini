@@ -1,13 +1,13 @@
-let todos = [];
+let carosellos = [];
 
 const render = () => {
-    const todoList = document.getElementById('todoList');
-    todoList.innerHTML = ''; 
+    const caroselloList = document.getElementById('caroselloList');
+    caroselloList.innerHTML = ''; 
   
- todos.forEach((todo, index) => 
-  todoList.innerHTML += 
-    "<li class='todo-item " + (todo.completed ? 'completed-box' : '') + "'>" +
-      "<span class='task-name'>" + todo.name + "</span>" +
+carosellos.forEach((carosello, index) => 
+  caroselloList.innerHTML += 
+    "<li class='carosello-item " + (carosello.completed ? 'completed-box' : '') + "'>" +
+      "<span class='task-name'>" + carosello.name + "</span>" +
       "<button class='complete-btn'>Complete</button>" +
       "<button class='delete-btn'>Delete</button>" +
     "</li>"
@@ -21,16 +21,16 @@ const render = () => {
     
     completeButtons.forEach((button, index) => {
       button.onclick = () => {
-        todos[index].completed = !todos[index].completed; 
-        completeTodo(todos[index]).then(() => render()); 
+        carosellos[index].completed = !carosellos[index].completed; 
+        completeCarosello(carosellos[index]).then(() => render()); 
       };
     });
   
     
     deleteButtons.forEach((button, index) => {
       button.onclick = () => {
-        deleteTodo(todos[index].id).then(() => {
-          todos.splice(index, 1); 
+        deleteCarosello(carosellos[index].id).then(() => {
+          carosellos.splice(index, 1); 
           render(); 
         });
       };
@@ -38,14 +38,14 @@ const render = () => {
 };
   
 
-const send = (todo) => {
+const send = (carosello) => {
   return new Promise((resolve, reject) => {
-    fetch("/todo/add", {
+    fetch("/carosello/add", {
       method: 'POST',
       headers: {
         "Content-Type": "application/json"
       },
-      body: JSON.stringify(todo)
+      body: JSON.stringify(carosello)
     })
     .then((response) => response.json())
     .then((json) => {
@@ -56,7 +56,7 @@ const send = (todo) => {
 
 const load = () => {
   return new Promise((resolve, reject) => {
-    fetch("/todo")
+    fetch("/carosello")
     .then((response) => response.json())
     .then((json) => {
       resolve(json);
@@ -68,46 +68,46 @@ const load = () => {
 const errorMessage = document.getElementById('error-message');
 
 insertButton.onclick = () => {
-    const todoName = todoInput.value.trim();
+    const caroselloName = caroselloInput.value.trim();
 
-    if (todoName === '') {
+    if (caroselloName === '') {
         errorMessage.style.display = 'block';
         return;
     } else {
         errorMessage.style.display = 'none';
     }
 
-    const todo = {          
-        name: todoName,
+    const carosello = {          
+        name: caroselloName,
         completed: false
     };      
 
-    send({todo: todo})
+    send({carosello: carosello})
         .then(() => load())
         .then((json) => { 
-            todos = json.todos;
-            todoInput.value = "";
+            carosellos = json.carosellos;
+            caroselloInput.value = "";
             render(); 
         });
 };
 
 load().then((json) => {
 
-    todos = json.todos;
+  carosellos = json.carosellos;
  
     render();
  
  });
  
 
-const completeTodo = (todo) => {
+const completeCarosello = (carosello) => {
   return new Promise((resolve, reject) => {
-    fetch("/todo/complete", {
+    fetch("/carosello/complete", {
       method: 'PUT',
       headers: {
         "Content-Type": "application/json"
       },
-      body: JSON.stringify(todo)
+      body: JSON.stringify(carosello)
     })
     .then((response) => response.json())
     .then((json) => {
@@ -116,9 +116,9 @@ const completeTodo = (todo) => {
   });
 };
 
-const deleteTodo = (id) => {
+const deleteCarosello = (id) => {
   return new Promise((resolve, reject) => {
-    fetch("/todo/" + id, {
+    fetch("/carosello/" + id, {
       method: 'DELETE',
       headers: {
         "Content-Type": "application/json"
@@ -133,8 +133,8 @@ const deleteTodo = (id) => {
 
 setInterval(() => {
   load().then((json) => {
-    todos = json.todos;
-    todoInput.value = "";
+    carosellos = json.carosellos;
+    caroselloInput.value = "";
     render();
   });
 }, 30000);

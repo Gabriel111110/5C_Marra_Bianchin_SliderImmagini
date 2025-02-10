@@ -19,3 +19,71 @@ button{
     margin: 4px 2px;
     cursor: pointer;
 }
+
+body {
+    font-family: Arial, sans-serif;
+    text-align: center;
+    margin: 0;
+    padding: 20px;
+    background-color: #f4f4f4;
+  }
+  
+  .todo-container {
+    background-color: white;
+    padding: 20px;
+    border-radius: 5px;
+    width: 300px;
+    margin: 0 auto;
+  }
+  
+  input, button {
+    padding: 10px;
+    margin: 5px;
+    border: 1px solid #ccc;
+  }
+  
+  button {
+    cursor: pointer;
+  }
+  
+  ul {
+    list-style-type: none;
+    padding: 0;
+  }
+  
+  li {
+    display: flex;
+    justify-content: space-between;  
+    align-items: center;      
+    margin: 5px 0;
+    padding: 10px;
+    background-color: #fff;
+    border: 1px solid #ccc;
+    border-radius: 3px;
+  }
+  
+  li .task-name {
+    flex-grow: 1;
+  }
+  
+  
+  button {
+    margin-left: 10px;
+  }
+  
+
+  .completed-box {
+    background-color: lightgreen;
+    }
+    
+#error-message {
+    display: none;
+    color: red;
+    margin-top: 10px;
+}
+
+p {
+    font-size: 10px;
+    color: #888;
+    margin-top: 5px;
+}

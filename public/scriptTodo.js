@@ -139,3 +139,38 @@ setInterval(() => {
   });
 }, 30000);
 
+
+(async () => {
+  const inputFile = document.querySelector('#file'); // c'è
+  const button = document.querySelector("#insertButton"); // c'è
+  const link = document.querySelector("#link"); //c'è
+  const fileListContainer = document.querySelector("#caroselloList"); // c'è
+
+  const loadFileList = async () => {
+    const res = await fetch("/filelist");
+    const files= await res.json();
+    fileListContainer.innerHTML = files.map(fileUrl => `<li><a href="${fileUrl}" target="_blank">${fileUrl}</a></li>`).join('');
+  }
+
+  const handleSubmit = async (event) => {
+    const formData = new FormData();
+    formData.append("file", inputFile.files[0]);
+    const body = formData;
+    body.description = inputFile.value;
+    const fetchOptions = {
+      method: 'post',
+      body: body
+    };
+    try {
+      const res = fetch("/upload", fetchOptions);
+      const data = res.json();      
+      link.href = data.url;
+      loadFileList();
+    } catch (e) {
+      console.log(e);
+    }
+  }
+
+  button.onclick = handleSubmit;
+  loadFileList();
+})();

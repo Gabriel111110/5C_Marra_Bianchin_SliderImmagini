@@ -1,42 +1,24 @@
-let carosellos = [];
+let carosellos = [{id:1, url:"./files/1real.png"}, {id:2, url:"./files/erroreSintassiDelete.png"}];
 
-const render = () => {
-    const caroselloList = document.getElementById('caroselloList');
-    caroselloList.innerHTML = ''; 
-  
-carosellos.forEach((carosello, index) => 
-  caroselloList.innerHTML += 
-    "<li class='carosello-item " + (carosello.completed ? 'completed-box' : '') + "'>" +
-      "<span class='task-name'>" + carosello.name + "</span>" +
-      "<button class='complete-btn'>Complete</button>" +
-      "<button class='delete-btn'>Delete</button>" +
-    "</li>"
-    );
+function render() {
+  load().then((json) => {
+    console.log(json);
+    carosellos = json.carosello;
 
-  
-    
-    const completeButtons = document.querySelectorAll('.complete-btn');
-    const deleteButtons = document.querySelectorAll('.delete-btn');
-  
-    
-    completeButtons.forEach((button, index) => {
-      button.onclick = () => {
-        carosellos[index].completed = !carosellos[index].completed; 
-        completeCarosello(carosellos[index]).then(() => render()); 
-      };
+    let html = `<div id="carouselExampleSlidesOnly" class="carousel slide" data-ride="carousel">
+  <div class="carousel-inner">`;
+    carosellos.forEach((element, index) => {
+      html += `<div class="carousel-item ` + (index == 0 ? "active" : "") + `">
+      <img class="d-block w-100" src="`+ element.url + `" alt="First slide">
+    </div>`;
     });
-  
-    
-    deleteButtons.forEach((button, index) => {
-      button.onclick = () => {
-        deleteCarosello(carosellos[index].id).then(() => {
-          carosellos.splice(index, 1); 
-          render(); 
-        });
-      };
-    });
-};
-  
+    html += "</div> </div>";
+    document.querySelector("#caroselloList").innerHTML = html;
+  });
+
+}
+
+
 
 const send = (carosello) => {
   return new Promise((resolve, reject) => {
@@ -47,20 +29,20 @@ const send = (carosello) => {
       },
       body: JSON.stringify(carosello)
     })
-    .then((response) => response.json())
-    .then((json) => {
-      resolve(json);
-    });
+      .then((response) => response.json())
+      .then((json) => {
+        resolve(json);
+      });
   });
 };
 
 const load = () => {
   return new Promise((resolve, reject) => {
     fetch("/carosello")
-    .then((response) => response.json())
-    .then((json) => {
-      resolve(json);
-    });
+      .then((response) => response.json())
+      .then((json) => {
+        resolve(json);
+      });
   });
 };
 
@@ -68,37 +50,33 @@ const load = () => {
 const errorMessage = document.getElementById('error-message');
 
 insertButton.onclick = () => {
-    const caroselloName = caroselloInput.value.trim();
+  const caroselloName = caroselloInput.value.trim();
+  if (caroselloName === '') {
+    errorMessage.style.display = 'block';
+    return;
+  } else {
+    errorMessage.style.display = 'none';
+  }
 
-    if (caroselloName === '') {
-        errorMessage.style.display = 'block';
-        return;
-    } else {
-        errorMessage.style.display = 'none';
-    }
+  const carosello = {
+    name: caroselloName,
+    completed: false
+  };
 
-    const carosello = {          
-        name: caroselloName,
-        completed: false
-    };      
-
-    send({carosello: carosello})
-        .then(() => load())
-        .then((json) => { 
-            carosellos = json.carosellos;
-            caroselloInput.value = "";
-            render(); 
-        });
+  send({ carosello: carosello })
+    .then(() => load())
+    .then((json) => {
+      carosellos = json.carosellos;
+      caroselloInput.value = "";
+      render();
+    });
 };
 
 load().then((json) => {
-
   carosellos = json.carosellos;
- 
-    render();
- 
- });
- 
+  render();
+});
+
 
 const completeCarosello = (carosello) => {
   return new Promise((resolve, reject) => {
@@ -109,10 +87,10 @@ const completeCarosello = (carosello) => {
       },
       body: JSON.stringify(carosello)
     })
-    .then((response) => response.json())
-    .then((json) => {
-      resolve(json);
-    });
+      .then((response) => response.json())
+      .then((json) => {
+        resolve(json);
+      });
   });
 };
 
@@ -124,10 +102,10 @@ const deleteCarosello = (id) => {
         "Content-Type": "application/json"
       },
     })
-    .then((response) => response.json())
-    .then((json) => {
-      resolve(json);
-    });
+      .then((response) => response.json())
+      .then((json) => {
+        resolve(json);
+      });
   });
 };
 
@@ -147,9 +125,9 @@ setInterval(() => {
   const fileListContainer = document.querySelector("#caroselloList"); // c'è
 
   const loadFileList = async () => {
-    const res = await fetch("/filelist");
-    const files= await res.json();
-    fileListContainer.innerHTML = files.map(fileUrl => `<li><a href="${fileUrl}" target="_blank">${fileUrl}</a></li>`).join('');
+    const res = await fetch("/carosello");
+    const files = await res.json();
+    render()
   }
 
   const handleSubmit = async (event) => {
@@ -162,10 +140,13 @@ setInterval(() => {
       body: body
     };
     try {
-      const res = fetch("/upload", fetchOptions);
-      const data = res.json();      
+      fetch("/carosello/add", fetchOptions).then(res=>res.json()).then(data=>{console.log(data);
       link.href = data.url;
       loadFileList();
+    })
+      
+      
+      
     } catch (e) {
       console.log(e);
     }

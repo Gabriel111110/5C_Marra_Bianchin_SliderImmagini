@@ -12,6 +12,18 @@ const app = express();
 const multer  = require('multer');
 
 
+let storage = multer.diskStorage({
+   destination: function (req, file, callback) {
+       callback(null, path.join(__dirname, "files"));
+   },
+   filename: function (req, file, callback) {
+       callback(null, file.originalname);
+   }
+});
+const upload = multer({ storage: storage}).single('file');
+
+
+
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({
    extended: true
@@ -20,6 +32,9 @@ conf.ssl = {
     ca: fs.readFileSync(__dirname + '/ca.pem')
 }
 app.use("/", express.static(path.join(__dirname, "public")));
+app.use("/files", express.static(path.join(__dirname, "files")));
+
+
 const executeQuery = (sql) => {
     return new Promise((resolve, reject) => {      
           connection.query(sql, function (err, result) {
@@ -68,13 +83,14 @@ const executeQuery = (sql) => {
 };
 test();
 
-app.post("/img/add", (req, res) => {
-    const img = req.body;
-    insert(img);
-    res.json({result: "Ok"});
+app.post("/carosello/add", (req, res) => {
+      upload(req,res,error=>{
+         const img=req.file.filename;
+         insert({url: ("/files/"+img)}).then(res.json({result: "Ok"}));
+      })
  });
 
- app.get("/img", async (req, res) => {
+ app.get("/carosello", async (req, res) => {
     try {
         const carosello = await select();
         res.json({ carosello : carosello });
@@ -83,7 +99,7 @@ app.post("/img/add", (req, res) => {
     }
 });
 
-app.delete("/img/:id", async (req, res) => {
+app.delete("/carosello/:id", async (req, res) => {
     try {
       await del(req.params.id); 
       res.json({ result: "Ok" });
@@ -101,134 +117,3 @@ createTable().then ( () => {
   }
 );
 
-
-
-
-
-
-
-
-
-/* porchiddio
-app.use(bodyParser.json());
-app.use(
-  bodyParser.urlencoded({
-    extended: true,
-  })
-);
-app.use("/", express.static(path.join(__dirname, "public")));
-
-app.post("/carosello/add", (req, res) => {
-  const carosello = req.body.carosello;
-
-  insert(carosello);
-
-  res.json({ result: "Ok" });
-});
-
-app.get("/carosello", (req, res) => {
-  select().then(carosellos => res.json({ carosellos: carosellos }));
-});
-
-app.put("/carosello/complete", (req, res) => {
-  const carosello = req.body;
-
-  try {
-    select()
-    .then(carosellos => {
-      carosellos.map((element) => {
-      if (element.id === carosello.id) {
-        element.completed = !element.completed;
-        update(element);
-      }
-
-      return element;
-    });
-    })
-    
-  } catch (e) {
-    console.log(e);
-  }
-  res.json({ result: "Ok" });
-});
-
-app.delete("/carosello/:id", (req, res) => {
-  select()
-  .then(carosellos => {
-    carosellos = carosellos.filter((element) => element.id == req.params.id);
-    remove(carosellos[0]);
-  })
-  
-  res.json({ result: "Ok" });
-});
-
-
-
-const executeQuery = (sql) => {
-    return new Promise((resolve, reject) => {      
-          connection.query(sql, function (err, result) {
-             if (err) {
-                console.error(err);
-                reject();     
-             }   
-             console.log('done');
-             resolve(result);         
-       });
-    })
- }
-
- const createTable = () => {
-    return executeQuery(`
-    CREATE TABLE IF NOT EXISTS carosello
-       ( id INT PRIMARY KEY AUTO_INCREMENT, 
-          name VARCHAR(255) NOT NULL, 
-          completed BOOLEAN ) 
-       `);      
- }
-
- const insert = (carosello) => {
-    const template = `
-    INSERT INTO carosello (name, completed) VALUES ('$NAME', '$COMPLETED')
-       `;
-    let sql = template.replace("$NAME", carosello.name);
-    sql = sql.replace("$COMPLETED", carosello.completed ? 1 : 0);
-    return executeQuery(sql); 
- }
-
- const select = () => {
-    const sql = `
-    SELECT id, name, completed FROM carosello 
-       `;
-    return executeQuery(sql); 
- }
-
- const update = (carosello) =>{
-    let sql = `
-    UPDATE carosello SET completed = '$COMPLETED' WHERE id = '$ID'
-    `;
-
-    sql = sql.replace("$COMPLETED", carosello.completed  ? 1 : 0);
-    sql = sql.replace("$ID", carosello.id);
-    return executeQuery(sql); 
- }
-
-
- const remove = (carosello) => {
-  let sql =  `
-  DELETE FROM carosello WHERE id = '$ID'
-  `;
-
-  sql = sql.replace("$ID", carosello.id);
-  return executeQuery(sql); 
- }
-
- 
- createTable().then ( () => {
-  const server = http.createServer(app);
-
-  server.listen(80, () => {
-    console.log("- server running");
-  })
-  }
-);
-*/

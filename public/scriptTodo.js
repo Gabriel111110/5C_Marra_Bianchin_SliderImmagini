@@ -7,13 +7,15 @@ function render() {
 
     let html = `<div id="carouselExampleSlidesOnly" class="carousel slide" data-ride="carousel">
   <div class="carousel-inner">`;
-    carosellos.forEach((element, index) => {
-      html += `<div class="carousel-item ` + (index == 0 ? "active" : "") + `">
+    carosellos.forEach((element, index) => { // non mette active le altre immagini del carosello quindi non va il previous/next nè fa vedere tutte le immagini in admin
+      html += `<div class="carousel-item ` + (index == 0 ? "active" : "") + `"> 
       <img class="d-block w-100" src="`+ element.url + `" alt="First slide">
     </div>`;
     });
     html += "</div> </div>";
     document.querySelector("#caroselloList").innerHTML = html;
+    document.querySelector("#crs").innerHTML += html;
+
   });
 
 }
@@ -112,7 +114,7 @@ const deleteCarosello = (id) => {
 setInterval(() => {
   load().then((json) => {
     carosellos = json.carosellos;
-    caroselloInput.value = "";
+    //caroselloInput.value = "";
     render();
   });
 }, 30000);

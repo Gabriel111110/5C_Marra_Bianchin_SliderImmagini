@@ -1,3 +1,4 @@
+
 let carosellos = [{id:1, url:"./files/1real.png"}, {id:2, url:"./files/erroreSintassiDelete.png"}];
 
 function render() {
@@ -18,6 +19,9 @@ function render() {
     html += "</table>";
     document.querySelector("#caroselloList").innerHTML = html;
   });
+
+
+  
 }
 
 
@@ -39,7 +43,7 @@ const send = (carosello) => {
   });
 };
 
-const load = () => {
+export const load = () => {
   return new Promise((resolve, reject) => {
     fetch("/carosello")
       .then((response) => response.json())

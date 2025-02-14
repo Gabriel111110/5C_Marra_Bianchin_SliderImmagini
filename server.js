@@ -84,7 +84,7 @@ const executeQuery = (sql) => {
 test();
 
 app.post("/carosello/add", (req, res) => {
-      upload(req,res,error=>{
+      upload((req,res),error=>{
          const img=req.file.filename;
          insert({url: ("/files/"+img)}).then(res.json({result: "Ok"}));
       })

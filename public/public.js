@@ -1,17 +1,30 @@
+import { load } from "./scriptTodo.js";
+
 const vaiAdAdmin = document.querySelector('#goToAdmin');
 const vaiAPublic = document.querySelector('#goToPublic');
 
 const render = () => {
-    let html = `                  <div class="carousel-item active">
-                    <img class="d-block w-100" src="..." alt="First slide">
-                  </div>
-                  <div class="carousel-item">
-                    <img class="d-block w-100" src="..." alt="Second slide">
-                  </div>
-                  <div class="carousel-item">
-                    <img class="d-block w-100" src="..." alt="Third slide">
-                  </div>`;
+  load().then((json) => {
+    console.log(json);
+    let carosellos = json.carosello;
 
+    console.log("ci entra");
+    let html = `<div id="carouselImagesIndicators" class="carousel slide" data-bs-ride="carousel">
+    <div class="carousel-inner">`;
+    carosellos.forEach((element, index) => { // non mette active le altre immagini del carosello quindi non va il previous/next nè fa vedere tutte le immagini in admin
+      console.log("ci entra2");
+      html += `<div class="carousel-item ` + (index == 0 ? "active" : "") + `"> 
+      <img class="d-block w-100" src="`+ element.url + `" alt="First slide">
+    </div>`;
+    });
+    html += "</div> </div>";
+    document.querySelector("#crs").innerHTML = html;
+
+  });
+}
+
+render();
+                  
 /*
 
 let carosellos = [{id:1, url:"./files/1real.png"}, {id:2, url:"./files/erroreSintassiDelete.png"}];
@@ -174,4 +187,3 @@ setInterval(() => {
   loadFileList();
 })();
 */
-}

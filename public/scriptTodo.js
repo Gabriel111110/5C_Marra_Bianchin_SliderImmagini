@@ -4,21 +4,22 @@ function render() {
   load().then((json) => {
     console.log(json);
     carosellos = json.carosello;
-
-    let html = `<div id="carouselExampleSlidesOnly" class="carousel slide" data-ride="carousel">
-  <div class="carousel-inner">`;
-    carosellos.forEach((element, index) => { // non mette active le altre immagini del carosello quindi non va il previous/next nè fa vedere tutte le immagini in admin
-      html += `<div class="carousel-item ` + (index == 0 ? "active" : "") + `"> 
-      <img class="d-block w-100" src="`+ element.url + `" alt="First slide">
-    </div>`;
+    carosellos.sort().reverse();
+    console.log(carosellos);
+    let html = `<table><tr><th>Immagine</th><th>Azioni</th></tr>`;
+    carosellos.forEach((element, index) => {
+      html += `<tr>
+        <td><img class="d-block w-100" src="`+ element.url + `" alt="First slide">
+        <td>
+          <button id = "deletebtn">Delete</button>
+        </td>
+      </tr>`;
     });
-    html += "</div> </div>";
+    html += "</table>";
     document.querySelector("#caroselloList").innerHTML = html;
-    document.querySelector("#crs").innerHTML += html;
-
   });
-
 }
+
 
 
 
@@ -142,7 +143,9 @@ setInterval(() => {
       body: body
     };
     try {
-      fetch("/carosello/add", fetchOptions).then(res=>res.json()).then(data=>{console.log(data);
+      fetch("/carosello/add", fetchOptions).then(res=>res.json()).then(data=>{
+        //pubsub publish render 
+        console.log(data);
       link.href = data.url;
       loadFileList();
     })

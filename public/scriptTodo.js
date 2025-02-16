@@ -14,12 +14,20 @@ export function scriptTodo(parentElement, pubsub) {
           html += `<tr>
             <td><img class="d-block w-100" src="`+ element.url + `" alt="First slide">
             <td>
-              <button id = "deletebtn">Delete</button>
+              <button id=${element.id} class = "deletebtn">Delete</button>
             </td>
           </tr>`;
         });
         html += "</table>";
         document.querySelector("#caroselloList").innerHTML = html;
+        document.querySelectorAll(".deletebtn").forEach(btn=>{
+          btn.onclick = () => {
+            this.deleteCarosello(btn.id).then(() => {
+                this.render();
+              }
+            );
+          }
+        })
       });
     },
     send: function (carosello) {

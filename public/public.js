@@ -1,189 +1,26 @@
-import { load } from "./scriptTodo.js";
-
-const vaiAdAdmin = document.querySelector('#goToAdmin');
-const vaiAPublic = document.querySelector('#goToPublic');
-
-const render = () => {
-  load().then((json) => {
-    console.log(json);
-    let carosellos = json.carosello;
-
-    console.log("ci entra");
-    let html = `<div id="carouselImagesIndicators" class="carousel slide" data-bs-ride="carousel">
-    <div class="carousel-inner">`;
-    carosellos.forEach((element, index) => { // non mette active le altre immagini del carosello quindi non va il previous/next nè fa vedere tutte le immagini in admin
-      console.log("ci entra2");
-      html += `<div class="carousel-item ` + (index == 0 ? "active" : "") + `"> 
-      <img class="d-block w-100" src="`+ element.url + `" alt="First slide">
-    </div>`;
-    });
-    html += "</div> </div>";
-    document.querySelector("#crs").innerHTML = html;
-
-  });
-}
-
-render();
-                  
-/*
-
-let carosellos = [{id:1, url:"./files/1real.png"}, {id:2, url:"./files/erroreSintassiDelete.png"}];
-
-function render() {
-  load().then((json) => {
-    console.log(json);
-    carosellos = json.carosello;
-
-    let html = `<div id="carouselExampleSlidesOnly" class="carousel slide" data-ride="carousel">
-  <div class="carousel-inner">`;
-    carosellos.forEach((element, index) => { // non mette active le altre immagini del carosello quindi non va il previous/next nè fa vedere tutte le immagini in admin
-      html += `<div class="carousel-item ` + (index == 0 ? "active" : "") + `"> 
-      <img class="d-block w-100" src="`+ element.url + `" alt="First slide">
-    </div>`;
-    });
-    html += "</div> </div>";
-    document.querySelector("#caroselloList").innerHTML = html;
-    document.querySelector("#crs").innerHTML += html;
-
-  });
-
-}
-
-
-
-const send = (carosello) => {
-  return new Promise((resolve, reject) => {
-    fetch("/carosello/add", {
-      method: 'POST',
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify(carosello)
-    })
-      .then((response) => response.json())
-      .then((json) => {
-        resolve(json);
+export function generatePublic(parentElement, pubsub) {
+  const vaiAdAdmin = document.querySelector('#goToAdmin');
+  const vaiAPublic = document.querySelector('#goToPublic');
+  let carosellos;
+  return {
+    build: function () {
+      pubsub.subscribe("load", (data) => {
+        carosellos = data.carosello;
+        this.render();
       });
-  });
-};
-
-const load = () => {
-  return new Promise((resolve, reject) => {
-    fetch("/carosello")
-      .then((response) => response.json())
-      .then((json) => {
-        resolve(json);
+    },
+    render: function () {
+      let html = `<div id="carouselImagesIndicators" class="carousel slide" data-bs-ride="carousel">
+      <div class="carousel-inner">`;
+      carosellos.forEach((element, index) => { // non mette active le altre immagini del carosello quindi non va il previous/next nè fa vedere tutte le immagini in admin
+        html += `<div class="carousel-item ` + (index == 0 ? "active" : "") + `"> 
+        <img class="d-block w-100" src="`+ element.url + `" alt="First slide">
+      </div>`;
       });
-  });
-};
-
-
-const errorMessage = document.getElementById('error-message');
-
-insertButton.onclick = () => {
-  const caroselloName = caroselloInput.value.trim();
-  if (caroselloName === '') {
-    errorMessage.style.display = 'block';
-    return;
-  } else {
-    errorMessage.style.display = 'none';
-  }
-
-  const carosello = {
-    name: caroselloName,
-    completed: false
-  };
-
-  send({ carosello: carosello })
-    .then(() => load())
-    .then((json) => {
-      carosellos = json.carosellos;
-      caroselloInput.value = "";
-      render();
-    });
-};
-
-load().then((json) => {
-  carosellos = json.carosellos;
-  render();
-});
-
-
-const completeCarosello = (carosello) => {
-  return new Promise((resolve, reject) => {
-    fetch("/carosello/complete", {
-      method: 'PUT',
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify(carosello)
-    })
-      .then((response) => response.json())
-      .then((json) => {
-        resolve(json);
-      });
-  });
-};
-
-const deleteCarosello = (id) => {
-  return new Promise((resolve, reject) => {
-    fetch("/carosello/" + id, {
-      method: 'DELETE',
-      headers: {
-        "Content-Type": "application/json"
-      },
-    })
-      .then((response) => response.json())
-      .then((json) => {
-        resolve(json);
-      });
-  });
-};
-
-setInterval(() => {
-  load().then((json) => {
-    carosellos = json.carosellos;
-    //caroselloInput.value = "";
-    render();
-  });
-}, 30000);
-
-
-(async () => {
-  const inputFile = document.querySelector('#file'); // c'è
-  const button = document.querySelector("#insertButton"); // c'è
-  const link = document.querySelector("#link"); //c'è
-  const fileListContainer = document.querySelector("#caroselloList"); // c'è
-
-  const loadFileList = async () => {
-    const res = await fetch("/carosello");
-    const files = await res.json();
-    render()
-  }
-
-  const handleSubmit = async (event) => {
-    const formData = new FormData();
-    formData.append("file", inputFile.files[0]);
-    const body = formData;
-    body.description = inputFile.value;
-    const fetchOptions = {
-      method: 'post',
-      body: body
-    };
-    try {
-      fetch("/carosello/add", fetchOptions).then(res=>res.json()).then(data=>{console.log(data);
-      link.href = data.url;
-      loadFileList();
-    })
-      
-      
-      
-    } catch (e) {
-      console.log(e);
+      html += "</div> </div>";
+      parentElement.innerHTML = html;
     }
   }
+}
 
-  button.onclick = handleSubmit;
-  loadFileList();
-})();
-*/
+

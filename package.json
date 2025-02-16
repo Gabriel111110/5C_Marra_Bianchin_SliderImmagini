@@ -1,12 +1,28 @@
 {
+  "name": "sliderimages",
+  "version": "1.0.0",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Gabriel111110/5C_Marra_Bianchin_SliderImmagini.git"
+  },
+  "author": "blondones & Marra",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Gabriel111110/5C_Marra_Bianchin_SliderImmagini/issues"
+  },
+  "homepage": "https://github.com/Gabriel111110/5C_Marra_Bianchin_SliderImmagini#readme",
   "dependencies": {
     "body-parser": "^1.20.3",
     "express": "^4.21.2",
     "fs": "^0.0.1-security",
-    "htt": "^0.0.1",
     "http": "^0.0.1-security",
-    "i": "^0.3.7",
     "multer": "^1.4.5-lts.1",
     "mysql2": "^3.12.0"
-  }
+  },
+  "description": ""
 }

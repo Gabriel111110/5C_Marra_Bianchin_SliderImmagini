@@ -8,7 +8,7 @@ export const createPubSub = () => {
             }
             events[eventName].push(callback);
         },
-        publish: (eventName,data) => {
+        publish: (eventName, data) => {
             events[eventName].forEach(callback => callback(data));
         },
     };

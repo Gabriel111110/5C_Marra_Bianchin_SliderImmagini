@@ -1,4 +1,4 @@
-export function login(parentElement, pubsub) {
+export async function login(parentElement, pubsub) {
 
   fetch("./conf.json").then(r => r.json()).then(config => {
 
